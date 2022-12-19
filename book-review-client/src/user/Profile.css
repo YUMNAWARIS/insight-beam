@@ -1,0 +1,81 @@
+.profile-head {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0px;
+}
+
+.profile-info h3 {
+    padding: 0px 30px;
+    font-size: 1.9rem;
+    color: darkred;
+    font-weight: bolder;
+}
+
+.profile-info h6 {
+    padding: 0px 30px;
+    font-size: 0.9rem;
+    color: rgb(136, 34, 34);
+    text-align: center;
+}
+.profile-info p{
+    padding: 10px;
+    color: brown;
+    text-align: center;
+}
+.profile-dp img {
+    width: 100px;
+    height: 100px;
+    border-radius: 100px;
+}
+
+
+
+/* --------------------------------------------------------------------------------------------- */
+
+.profile-nav .nav-links {
+    display: flex;
+    text-decoration: none;
+    justify-content: center;
+    list-style: none;
+    margin: 10px 0px;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    padding: 10px;
+    font-size: 1.3rem;
+}
+
+
+
+
+
+
+
+
+@media only screen and (max-width: 420px) {
+    .profile-dp img {
+        width: 90px;
+        height: 90px;
+        border-radius: 100px;
+    }
+
+    .profile-info h3 {
+        padding: 0px 10px;
+        font-size: 1.4rem;
+        color: darkred;
+        font-weight: bolder;
+    }
+
+    .profile-info h6 {
+        padding: 0px 10px;
+        font-size: 0.9rem;
+        color: brown;
+        text-align: center;
+    }
+    .nav-links li a {
+        padding: 6px;
+        font-size: 0.8rem;
+    }
+}
