@@ -1,6 +1,8 @@
 # Insight Beam
 A full‑stack book review and recommendation app with a Next.js client and a Node/Express API backed by PostgreSQL.
 
+[![Watch the video](https://raw.githubusercontent.com/YUMNAWARIS/insight-beam/main/assets/thumbnail.png)](https://raw.githubusercontent.com/YUMNAWARIS/insight-beam/main/assets/project-screening.mov)
+
 ## Project Structure
 insight-beam/
 ├── client/        # Next.js 16 app (TypeScript, React 19, MUI)
