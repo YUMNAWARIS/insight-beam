@@ -10,7 +10,6 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [bio, setBio] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +26,7 @@ export default function RegisterPage() {
     }
     setSubmitting(true);
     try {
-      await register({ name, email, password, bio });
+      await register({ name, email, password });
     } catch (err) {
       setError("Something went wrong. Please try again later.");
     } finally {
@@ -47,7 +46,6 @@ export default function RegisterPage() {
               <TextField type="email" label="Email" value={email} onChange={(e) => setEmail(e.target.value)} required fullWidth />
               <TextField type="password" label="Password" value={password} onChange={(e) => setPassword(e.target.value)} required fullWidth />
               <TextField type="password" label="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required fullWidth />
-              <TextField label="Bio" value={bio} onChange={(e) => setBio(e.target.value)} fullWidth multiline minRows={3} />
               <Button type="submit" disabled={submitting}>Create Account</Button>
             </Stack>
           </form>
