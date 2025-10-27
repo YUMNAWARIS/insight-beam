@@ -50,6 +50,8 @@ type ContactInfo = {
   bio?: string;
 };
 
+type CombinedForm = ProfileInfo & ContactInfo;
+
 const COUNTRIES = ["United States", "United Kingdom", "Canada", "Germany", "France", "India"];
 
 export default function ProfilePage() {
@@ -137,42 +139,13 @@ export default function ProfilePage() {
     bio: Yup.string().max(1000, "Max length is 1000"),
   });
 
-  const profileForm = useFormik<ProfileInfo>({
-    enableReinitialize: true,
-    initialValues: defaultProfileInfo,
-    validationSchema: profileValidation,
-    onSubmit: async (values: ProfileInfo, helpers: FormikHelpers<ProfileInfo>) => {
-      try {
-        const res = await api.patch("/user/profile", values);
-        // Update local user profile cache
-        const stored = typeof window !== "undefined" ? localStorage.getItem("ib_user") : null;
-        if (stored) {
-          try {
-            const parsed = JSON.parse(stored) as any;
-            const updated = (res as any)?.data?.profile;
-            if (updated) {
-              parsed.user_profile = updated;
-              localStorage.setItem("ib_user", JSON.stringify(parsed));
-              setStoredUser(parsed);
-            }
-          } catch {}
-        }
-        setIsError(false);
-        setStatusMessage("Profile information saved.");
-      } catch (e: unknown) {
-        setIsError(true);
-        setStatusMessage((e as Error).message);
-      } finally {
-        helpers.setSubmitting(false);
-      }
-    },
-  });
+  const combinedValidation = profileValidation.concat(contactValidation);
 
-  const contactForm = useFormik<ContactInfo>({
+  const combinedForm = useFormik<CombinedForm>({
     enableReinitialize: true,
-    initialValues: defaultContactInfo,
-    validationSchema: contactValidation,
-    onSubmit: async (values: ContactInfo, helpers: FormikHelpers<ContactInfo>) => {
+    initialValues: { ...defaultProfileInfo, ...defaultContactInfo },
+    validationSchema: combinedValidation,
+    onSubmit: async (values: CombinedForm, helpers: FormikHelpers<CombinedForm>) => {
       try {
         const res = await api.patch("/user/profile", values);
         const stored = typeof window !== "undefined" ? localStorage.getItem("ib_user") : null;
@@ -188,7 +161,7 @@ export default function ProfilePage() {
           } catch {}
         }
         setIsError(false);
-        setStatusMessage("Contact and bio saved.");
+        setStatusMessage("All changes saved.");
       } catch (e: unknown) {
         setIsError(true);
         setStatusMessage((e as Error).message);
@@ -199,8 +172,8 @@ export default function ProfilePage() {
   });
 
   const handleSaveAll = useCallback(async () => {
-    await Promise.all([profileForm.submitForm(), contactForm.submitForm()]);
-  }, [profileForm, contactForm]);
+    await combinedForm.submitForm();
+  }, [combinedForm]);
 
   const [showOld, setShowOld] = useState(false);
   const [showNew, setShowNew] = useState(false);
@@ -349,17 +322,17 @@ export default function ProfilePage() {
                 <Card className="rounded-2xl shadow-sm">
                   <CardHeader title="Profile Information" />
                   <CardContent>
-                    <form onSubmit={profileForm.handleSubmit} className="space-y-4">
+                    <form onSubmit={combinedForm.handleSubmit} className="space-y-4">
                       <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
                           <TextField
                             name="username"
                             label="Username"
-                            value={profileForm.values.username}
-                            onChange={profileForm.handleChange}
-                            onBlur={profileForm.handleBlur}
-                            error={profileForm.touched.username && Boolean(profileForm.errors.username)}
-                            helperText={profileForm.touched.username && profileForm.errors.username}
+                            value={combinedForm.values.username}
+                            onChange={combinedForm.handleChange}
+                            onBlur={combinedForm.handleBlur}
+                            error={combinedForm.touched.username && Boolean(combinedForm.errors.username)}
+                            helperText={combinedForm.touched.username && combinedForm.errors.username}
                             fullWidth
                           />
                         </Grid>
@@ -367,11 +340,11 @@ export default function ProfilePage() {
                           <TextField
                             name="nickname"
                             label="Nickname"
-                            value={profileForm.values.nickname}
-                            onChange={profileForm.handleChange}
-                            onBlur={profileForm.handleBlur}
-                            error={profileForm.touched.nickname && Boolean(profileForm.errors.nickname)}
-                            helperText={profileForm.touched.nickname && profileForm.errors.nickname}
+                            value={combinedForm.values.nickname}
+                            onChange={combinedForm.handleChange}
+                            onBlur={combinedForm.handleBlur}
+                            error={combinedForm.touched.nickname && Boolean(combinedForm.errors.nickname)}
+                            helperText={combinedForm.touched.nickname && combinedForm.errors.nickname}
                             fullWidth
                           />
                         </Grid>
@@ -379,11 +352,11 @@ export default function ProfilePage() {
                           <TextField
                             name="first_name"
                             label="First Name"
-                            value={profileForm.values.first_name}
-                            onChange={profileForm.handleChange}
-                            onBlur={profileForm.handleBlur}
-                            error={profileForm.touched.first_name && Boolean(profileForm.errors.first_name)}
-                            helperText={profileForm.touched.first_name && profileForm.errors.first_name}
+                            value={combinedForm.values.first_name}
+                            onChange={combinedForm.handleChange}
+                            onBlur={combinedForm.handleBlur}
+                            error={combinedForm.touched.first_name && Boolean(combinedForm.errors.first_name)}
+                            helperText={combinedForm.touched.first_name && combinedForm.errors.first_name}
                             fullWidth
                           />
                         </Grid>
@@ -391,24 +364,24 @@ export default function ProfilePage() {
                           <TextField
                             name="last_name"
                             label="Last Name"
-                            value={profileForm.values.last_name}
-                            onChange={profileForm.handleChange}
-                            onBlur={profileForm.handleBlur}
-                            error={profileForm.touched.last_name && Boolean(profileForm.errors.last_name)}
-                            helperText={profileForm.touched.last_name && profileForm.errors.last_name}
+                            value={combinedForm.values.last_name}
+                            onChange={combinedForm.handleChange}
+                            onBlur={combinedForm.handleBlur}
+                            error={combinedForm.touched.last_name && Boolean(combinedForm.errors.last_name)}
+                            helperText={combinedForm.touched.last_name && combinedForm.errors.last_name}
                             fullWidth
                           />
                         </Grid>
                         <Grid item xs={12} md={6}>
-                          <FormControl fullWidth error={Boolean(profileForm.touched.country && profileForm.errors.country)}>
+                          <FormControl fullWidth error={Boolean(combinedForm.touched.country && combinedForm.errors.country)}>
                             <InputLabel id="country-label">Country</InputLabel>
                             <Select
                               labelId="country-label"
                               name="country"
                               label="Country"
-                              value={profileForm.values.country}
-                              onChange={profileForm.handleChange}
-                              onBlur={profileForm.handleBlur}
+                              value={combinedForm.values.country}
+                              onChange={combinedForm.handleChange}
+                              onBlur={combinedForm.handleBlur}
                             >
                               {COUNTRIES.map((c) => (
                                 <MenuItem key={c} value={c}>
@@ -422,11 +395,11 @@ export default function ProfilePage() {
                           <TextField
                             name="city"
                             label="City"
-                            value={profileForm.values.city}
-                            onChange={profileForm.handleChange}
-                            onBlur={profileForm.handleBlur}
-                            error={profileForm.touched.city && Boolean(profileForm.errors.city)}
-                            helperText={profileForm.touched.city && profileForm.errors.city}
+                            value={combinedForm.values.city}
+                            onChange={combinedForm.handleChange}
+                            onBlur={combinedForm.handleBlur}
+                            error={combinedForm.touched.city && Boolean(combinedForm.errors.city)}
+                            helperText={combinedForm.touched.city && combinedForm.errors.city}
                             fullWidth
                           />
                         </Grid>
@@ -440,18 +413,18 @@ export default function ProfilePage() {
                 <Card className="rounded-2xl shadow-sm">
                   <CardHeader title="Contact Info + About the User" />
                   <CardContent>
-                    <form onSubmit={contactForm.handleSubmit} className="space-y-4">
+                    <form onSubmit={combinedForm.handleSubmit} className="space-y-4">
                       <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
                           <TextField
                             name="email"
                             label="Email"
                             required
-                            value={contactForm.values.email}
-                            onChange={contactForm.handleChange}
-                            onBlur={contactForm.handleBlur}
-                            error={contactForm.touched.email && Boolean(contactForm.errors.email)}
-                            helperText={contactForm.touched.email && contactForm.errors.email}
+                            value={combinedForm.values.email}
+                            onChange={combinedForm.handleChange}
+                            onBlur={combinedForm.handleBlur}
+                            error={combinedForm.touched.email && Boolean(combinedForm.errors.email)}
+                            helperText={combinedForm.touched.email && combinedForm.errors.email}
                             fullWidth
                           />
                         </Grid>
@@ -459,11 +432,11 @@ export default function ProfilePage() {
                           <TextField
                             name="website"
                             label="Website"
-                            value={contactForm.values.website || ""}
-                            onChange={contactForm.handleChange}
-                            onBlur={contactForm.handleBlur}
-                            error={contactForm.touched.website && Boolean(contactForm.errors.website)}
-                            helperText={contactForm.touched.website && contactForm.errors.website}
+                            value={combinedForm.values.website || ""}
+                            onChange={combinedForm.handleChange}
+                            onBlur={combinedForm.handleBlur}
+                            error={combinedForm.touched.website && Boolean(combinedForm.errors.website)}
+                            helperText={combinedForm.touched.website && combinedForm.errors.website}
                             fullWidth
                           />
                         </Grid>
@@ -475,9 +448,9 @@ export default function ProfilePage() {
                               label="Biographical Info"
                               multiline
                               minRows={4}
-                              value={contactForm.values.bio || ""}
-                              onChange={contactForm.handleChange}
-                              onBlur={contactForm.handleBlur}
+                              value={combinedForm.values.bio || ""}
+                              onChange={combinedForm.handleChange}
+                              onBlur={combinedForm.handleBlur}
                               fullWidth
                             />
                       </div>
