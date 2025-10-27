@@ -26,11 +26,8 @@ export default function UserNavbar() {
           Insight Beam
         </Typography>
         <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
-          <Typography component={Link} href="/explore" sx={{ textDecoration: "none"}}>Explore</Typography>
-          <Typography component={Link} href="/books" sx={{ textDecoration: "none"}}>Books</Typography>
-          <Typography component={Link} href="/likes" sx={{ textDecoration: "none"}}>Likes</Typography>
-          <Typography component={Link} href="/reviews" sx={{ textDecoration: "none"}}>Reviews</Typography>
-          <Typography component={Link} href="/profile" sx={{ textDecoration: "none"}}>Profile</Typography>
+          <Typography component={Link} href="/user/explore" sx={{ textDecoration: "none"}}>Explore</Typography>
+          <Typography component={Link} href="/user/my-collection" sx={{ textDecoration: "none"}}>My Collection</Typography>
         </Box>
         <Button onClick={logout} color="inherit" size="small">
           Logout

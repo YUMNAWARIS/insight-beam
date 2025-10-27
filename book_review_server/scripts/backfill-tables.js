@@ -1,23 +1,15 @@
-import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
-
+const { v4: uuidv4 } = require("uuid");
+const axios = require("axios");
+const knex = require("../db/knex");
 /**
  * Knex seed script to populate authors, books, publications, and their relations
  * using Open Library API (openlibrary.org)
  */
-
-export const seed = async function (knex) {
+const seed = async function (knex) {
   console.log("🚀 Starting seed: books, authors, publications...");
 
-  // Clear existing data (optional)
-  await knex("book_publications").del();
-  await knex("book_authors").del();
-  await knex("books").del();
-  await knex("authors").del();
-  await knex("publications").del();
-
   const booksResp = await axios.get("https://openlibrary.org/search.json", {
-    params: { q: "science", limit: 100 },
+    params: { q: "John Green", limit: 100 },
     headers: { "User-Agent": "InsightBeamSeeder/1.0 (your.email@example.com)" },
   });
 
@@ -129,3 +121,5 @@ export const seed = async function (knex) {
 
   console.log("✅ Seed completed successfully!");
 };
+
+seed(knex);

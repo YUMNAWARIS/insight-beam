@@ -30,7 +30,7 @@ async function updateBook(id, { title, author, description, publisher, ISBN }) {
 }
 
 async function findAllBooks() {
-    return db('books').select('*')
+    return db('books').select('*').orderBy('created_at', 'desc')
 }
 
 async function findBookById(id) {
