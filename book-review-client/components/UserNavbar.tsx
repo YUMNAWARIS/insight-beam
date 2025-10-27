@@ -5,18 +5,10 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Link from "next/link";
 import Button from "@mui/material/Button";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function UserNavbar() {
-  const router = useRouter();
-  const handleLogout = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("ib_token");
-      localStorage.removeItem("ib_user");
-      document.cookie = "ib_auth=; path=/; max-age=0";
-    }
-    router.push("/login");
-  };
+  const { logout } = useAuth();
   return (
     <AppBar
       position="sticky"
@@ -40,7 +32,7 @@ export default function UserNavbar() {
           <Typography component={Link} href="/reviews" sx={{ textDecoration: "none"}}>Reviews</Typography>
           <Typography component={Link} href="/profile" sx={{ textDecoration: "none"}}>Profile</Typography>
         </Box>
-        <Button onClick={handleLogout} color="inherit" size="small">
+        <Button onClick={logout} color="inherit" size="small">
           Logout
         </Button>
       </Toolbar>

@@ -5,6 +5,7 @@ import type { Theme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import createTheme from "@mui/material/styles/createTheme";
 import { deepOrange, orange } from "@mui/material/colors";
+import { AuthProvider } from "@/context/AuthContext";
  
 
 function getTheme(mode: "light" | "dark") {
@@ -97,7 +98,9 @@ export default function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {children}
+      <AuthProvider>
+        {children}
+      </AuthProvider>
     </ThemeProvider>
   );
 }

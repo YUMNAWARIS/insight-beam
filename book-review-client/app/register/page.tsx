@@ -2,10 +2,10 @@
 import { useState } from "react";
 import { Alert, Box, Button, Card, CardContent, Link as MLink, Stack, TextField, Typography } from "@mui/material";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function RegisterPage() {
-  const router = useRouter();
+  const { register } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,17 +27,7 @@ export default function RegisterPage() {
     }
     setSubmitting(true);
     try {
-      const res = await fetch((process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:4000").concat("/user/signup"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, bio })
-      });
-      const data = await res.json();
-      if (!res.ok || data?.Error) throw new Error(data?.Error_Message || "Signup failed");
-      localStorage.setItem("ib_token", data.Authentication_Token);
-      localStorage.setItem("ib_user", JSON.stringify(data.user));
-      document.cookie = "ib_auth=1; path=/; max-age=2592000"; // 30 days
-      router.replace("/profile");
+      await register({ name, email, password, bio });
     } catch (err) {
       setError("Something went wrong. Please try again later.");
     } finally {
@@ -62,7 +52,7 @@ export default function RegisterPage() {
             </Stack>
           </form>
           <Typography sx={{ mt: 2 }}>
-            Already have an account? <MLink component={Link} href="/login">Login here</MLink>
+            Already have an account? <MLink component={Link} href="/auth/login">Login here</MLink>
           </Typography>
         </CardContent>
       </Card>
