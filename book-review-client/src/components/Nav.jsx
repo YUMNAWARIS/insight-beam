@@ -9,7 +9,7 @@ function Nav(props) {
         return (
             <div className="Nav">
                 <nav className="navbar">
-                    <h1 className="navbar-logo">GoodReads</h1>
+                    <h1 className="navbar-logo">Insight Beam</h1>
                     <ul>
                         <div className='showed'>
                             <li><Link to='/profile'>{user.user_name?user.user_name:"Profile"}</Link></li>
@@ -38,7 +38,7 @@ function Nav(props) {
     return (
         <div className="Nav">
             <nav className="navbar">
-                <h1 className="navbar-logo">GoodReads</h1>
+                <h1 className="navbar-logo">Insight Beam</h1>
                 <ul>
                     <div className='showed'>
                         <li><Link to='/login' >Login</Link></li>

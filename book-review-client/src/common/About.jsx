@@ -11,7 +11,7 @@ function About() {
                 </div>
                 <div>
                     <h2 >Who We Are</h2>
-                    <p>GoodReads is here to help you in your search for a book that is worth it. We know what it feels like when
+                    <p>Insight Beam is here to help you in your search for a book that is worth it. We know what it feels like when
                         you judge a book by its cover and it looks good but you do not know what is inside. You do not want to spend
                         your hard-earned money on something that looked like gold from far but it is just cheap glitter up close.
                     </p>
@@ -24,8 +24,8 @@ function About() {
                     <img src={bookscollection} />
                 </div>
                 <div>
-                    <p>GoodReads has a collection of books uploaded by other book connoisseurs that are reviewed and rated by other book connoisseurs. It is THAT simple.</p><br />
-                    <p>GoodReads is a community of book readers where everyone helps each other out in choosing the right book that
+                    <p>Insight Beam has a collection of books uploaded by other book connoisseurs that are reviewed and rated by other book connoisseurs. It is THAT simple.</p><br />
+                    <p>Insight Beam is a community of book readers where everyone helps each other out in choosing the right book that
                         you can enjoy while sipping hot chocolate by the fire.</p>
                 </div>
             </div>

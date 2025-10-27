@@ -7,7 +7,7 @@ function Footer(props) {
     return (
         <div className='Footer'>
             <div className='footer-head'>
-                <h1>GoodReads</h1>
+                <h1>Insight Beam</h1>
                 <h6>A wonderful platform where you can find and share your thoughts about your favourite books...</h6>
             </div>
             <div className='footer-body'>
@@ -48,7 +48,7 @@ function Footer(props) {
             </div>
             <div className='footer-end'>
                 <div className='copywrite'>
-                    <p>© GoodReads Inc 2022</p>
+                    <p>© Insight Beam Inc 2022</p>
                 </div>
             </div>
 
