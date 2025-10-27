@@ -243,6 +243,21 @@ export default function ProfilePage() {
       const imageUrl = (res as unknown as { data: { Image_URL?: string } }).data?.Image_URL || null;
       if (imageUrl) {
         setProfileImageUrl(imageUrl);
+        const stored = typeof window !== "undefined" ? localStorage.getItem("ib_user") : null;
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored) as any;
+            const currentData = (parsed?.user_profile?.data || {}) as Record<string, unknown>;
+            const updatedData = { ...currentData, profile_image: imageUrl };
+            if (parsed.user_profile) {
+              parsed.user_profile = { ...parsed.user_profile, data: updatedData };
+            } else {
+              parsed.user_profile = { data: updatedData };
+            }
+            localStorage.setItem("ib_user", JSON.stringify(parsed));
+            setStoredUser(parsed);
+          } catch {}
+        }
         setIsError(false);
         setStatusMessage("Profile photo updated.");
       }

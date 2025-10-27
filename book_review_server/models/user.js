@@ -89,7 +89,6 @@ async function changePassword(userId, oldPassword, newPassword) {
 }
 
 async function updateUserProfile(userId, profileData) {
-    console.log(profileData);
     const existing = await db('profile').where({ user_id: userId }).first()
     if (!existing) {
         const [created] = await db('profile')
