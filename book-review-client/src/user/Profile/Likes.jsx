@@ -32,7 +32,7 @@ function Liked(props) {
         <div className="book-container">
             {!books ? <h4 className="no-book-message">No Books in your like collection yet...</h4> : JSON.parse(books).map((book, index) => {
                 return (
-                    <div className="likes-container" key={book._id}>
+                    <div className="likes-container" key={book.id}>
                         <BookView book={book}  user={user} token={token} />
                     </div>
                 )

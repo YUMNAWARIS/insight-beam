@@ -35,7 +35,7 @@ function MyBooks(props) {
                 <h4 className="no-book-message">Share your favorite book collections with others and get reviews NOW...</h4>
                 : JSON.parse(books).map((book, index) => {
                     return (
-                        <div id='one-book' key={book._id}>
+                        <div id='one-book' key={book.id}>
                             <BookView book={book}  user={user} token={token} />
                         </div>
                     )

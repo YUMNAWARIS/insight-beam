@@ -1,60 +1,66 @@
-const mongoose = require('mongoose')
-const {isEmail} = require('validator');
-const hashed = require('bcrypt');
+const db = require('../db/knex')
 
-const userSchema = new mongoose.Schema({
-    name: {
-        type:String,
-        required : [true, "Please Enter your name."]
-    },
-    email : {
-        type : String,
-        required : [true, "Please Enter your email."],
-        unique : [true, "Email already exist."],
-        lowerCase : true,
-        validate : [isEmail, "Please Enter a valid Email"]
-    },
-    bio : String,
-    password: {
-        type:String ,
-        required : [true,"Please enter a Password."],
-        minLength : [8,"Password should be 8 character long."]
-    },
-    books:[
-        {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'books'
-        }
-    ],
-    likes:[
-        {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'books'
-        }
-    ]
-})
-
-
-// userSchema.pre('save',async function(next){
-//     const salt = await hashed.genSalt();
-//     this.password = await hashed.hash(this.password, salt);
-//     next();
-// })
-
-// Static methods on UserSchema
-userSchema.statics.login = async function(email,pass){
-    const user = await this.findOne({email})
-    if(user){
-        // const IsAuth = await hashed.compare(pass,user.password);
-        if(pass == user.password){
-            return user;
-        }else{
-            throw Error("Password Incorrect...");
-        }
-    }else{
-        throw Error("Email Not Found...");
+async function createUser({ name, email, password, bio }) {
+    const existing = await db('users').where({ email }).first()
+    if (existing) {
+        throw new Error('Email already exist.')
     }
+    const [user] = await db('users')
+        .insert({ name, email, password, bio })
+        .returning(['id', 'name', 'email', 'bio'])
+    return user
 }
 
-const User = mongoose.model("users",userSchema);
-module.exports = User;
+async function findUserByEmail(email) {
+    return db('users').where({ email }).first()
+}
+
+async function findUserById(id) {
+    return db('users').where({ id }).first()
+}
+
+async function login(email, password) {
+    const user = await findUserByEmail(email)
+    if (!user) throw new Error('Email Not Found...')
+    if (password !== user.password) throw new Error('Password Incorrect...')
+    return user
+}
+
+async function getUserCreatedBooks(userId) {
+    return db('books').where({ creator: userId }).select('*')
+}
+
+async function getUserLikedBooks(userId) {
+    return db('books')
+        .join('likes', 'books.id', 'likes.book_id')
+        .where('likes.user_id', userId)
+        .select('books.*')
+}
+
+async function addLike(userId, bookId) {
+    const exists = await db('likes').where({ user_id: userId, book_id: bookId }).first()
+    if (exists) throw new Error('Book is already liked by you.')
+    await db('likes').insert({ user_id: userId, book_id: bookId })
+    await db('books').where({ id: bookId }).increment('like_count', 1)
+}
+
+async function removeLike(userId, bookId) {
+    const exists = await db('likes').where({ user_id: userId, book_id: bookId }).first()
+    if (!exists) return false
+    await db('likes').where({ user_id: userId, book_id: bookId }).del()
+    await db('books').where({ id: bookId }).decrement('like_count', 1)
+    return true
+}
+
+module.exports = {
+    createUser,
+    findUserByEmail,
+    findUserById,
+    login,
+    getUserCreatedBooks,
+    getUserLikedBooks,
+    addLike,
+    removeLike
+}
+
+

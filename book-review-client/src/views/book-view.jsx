@@ -24,7 +24,7 @@ function BookView(props) {
                 "Authorization": `${token}`
             },
         }
-        fetch(`http://localhost:4000/like/${book._id}`, config)
+        fetch(`http://localhost:4000/like/${book.id}`, config)
             .then(res => {
                 return res.json()
             })
@@ -50,7 +50,7 @@ function BookView(props) {
                 "Authorization": `${token}`
             },
         }
-        fetch(`http://localhost:4000/like/${book._id}`, config)
+        fetch(`http://localhost:4000/like/${book.id}`, config)
             .then(res => {
                 return res.json()
             })
@@ -70,7 +70,7 @@ function BookView(props) {
     useEffect(() => {
         if (token) {
             for (let i = 0; i < user.liked_books.length; i++) {
-                if (user.liked_books[i]._id == book._id) {
+                if (user.liked_books[i].id == book.id) {
                     setLike(true)
                 }
             }

@@ -37,7 +37,7 @@ function Recent(props){
         return(
             
             <div className="book-container"> 
-                { !books ? <h4>Please Wait for a while... No books are available...</h4>  : JSON.parse(books).map((book, index)=>{ return( <BookView book={book} key={book._id} user={user} token={token}/> ) })}
+                { !books ? <h4>Please Wait for a while... No books are available...</h4>  : JSON.parse(books).map((book, index)=>{ return( <BookView book={book} key={book.id} user={user} token={token}/> ) })}
             </div>
         )
 }

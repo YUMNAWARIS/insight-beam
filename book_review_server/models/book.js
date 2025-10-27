@@ -1,42 +1,47 @@
-const mongoose = require('mongoose')
+const db = require('../db/knex')
 
-const bookSchema = new mongoose.Schema({
-    title : {
-        type:String,
-        required : [true, "Please Enter a title."]
-    },
-    author : {
-        type:String,
-        required : [true,"Please Enter an Author."]
-    },
-    description : {
-        type:String,
-        required : [true, "Please Enter a description."]
-    },
-    publisher : {
-        type:String,
-        required : [true, "Please Enter a publisher."]
-    },
-    ISBN : {
-        type:String,
-        required : [true, "Please Enter an ISBN."],
-        unique  : [true,"Book is already registered."]
-    },
-    like_count : {
-        type:Number,
-    },
-    reviews : [
-        {
-            user_id : {
-                type : mongoose.Schema.Types.ObjectId,
-                ref : "users"
-            },
-            review_message : String
-        }
-    ],
-    creator : String,
-    purchase_link : String,
-    imaged_link : String
-})
+async function createBook({ title, author, description, publisher, ISBN, creator, purchase_link, imaged_link }) {
+    const existing = await db('books').where({ isbn: ISBN }).first()
+    if (existing) {
+        throw new Error('Book is already registered.')
+    }
+    const [book] = await db('books')
+        .insert({
+            title,
+            author,
+            description,
+            publisher,
+            isbn: ISBN,
+            like_count: 0,
+            creator,
+            purchase_link,
+            imaged_link
+        })
+        .returning('*')
+    return book
+}
 
-module.exports = mongoose.model('books',bookSchema)
+async function updateBook(id, { title, author, description, publisher, ISBN }) {
+    const [updated] = await db('books')
+        .where({ id })
+        .update({ title, author, description, publisher, isbn: ISBN })
+        .returning('*')
+    return updated
+}
+
+async function findAllBooks() {
+    return db('books').select('*')
+}
+
+async function findBookById(id) {
+    return db('books').where({ id }).first()
+}
+
+module.exports = {
+    createBook,
+    updateBook,
+    findAllBooks,
+    findBookById
+}
+
+

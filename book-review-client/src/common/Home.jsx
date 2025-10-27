@@ -106,7 +106,7 @@ function Home(props) {
 
             {Searched_msg ? <h4 className="no-book-message">{Searched_msg}</h4> : <p></p>}
             {!rendered_books ? <h4>Please Wait for a while... No books are available...</h4> : JSON.parse(rendered_books).sort((a, b) => (a.like_count < b.like_count) ? 1 : ((b.like_count < a.like_count) ? -1 : 0)).map((book, index) => { return (
-                <div className="home-container-book"  key={book._id} >
+                <div className="home-container-book"  key={book.id} >
                     <BookView book={book} user={user} token={token} />
                 </div>
             
