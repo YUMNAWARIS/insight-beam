@@ -1,0 +1,8 @@
+/* Reset handled by MUI CssBaseline. Keep minimal global styles. */
+html, body {
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
