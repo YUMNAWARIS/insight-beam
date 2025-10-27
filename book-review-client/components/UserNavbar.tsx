@@ -27,7 +27,9 @@ export default function UserNavbar() {
         </Typography>
         <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
           <Typography component={Link} href="/user/explore" sx={{ textDecoration: "none"}}>Explore</Typography>
-          <Typography component={Link} href="/user/my-collection" sx={{ textDecoration: "none"}}>My Collection</Typography>
+          <Typography component={Link} href="/user/my-collections" sx={{ textDecoration: "none"}}>My Collection</Typography>
+          <Typography component={Link} href="/user/my-likes" sx={{ textDecoration: "none"}}>My Likes</Typography>
+          <Typography component={Link} href="/user/profile" sx={{ textDecoration: "none"}}>Profile</Typography>
         </Box>
         <Button onClick={logout} color="inherit" size="small">
           Logout

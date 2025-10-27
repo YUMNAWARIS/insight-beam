@@ -19,4 +19,20 @@ export async function apiFetch(path: string, init?: RequestInit) {
   return data;
 }
 
+export async function likeBook(bookId: string) {
+  return apiFetch(`/like/${bookId}`, { method: "POST" });
+}
+
+export async function unlikeBook(bookId: string) {
+  return apiFetch(`/like/${bookId}`, { method: "DELETE" });
+}
+
+export async function saveBook(bookId: string) {
+  return apiFetch(`/collection/${bookId}`, { method: "POST" });
+}
+
+export async function unsaveBook(bookId: string) {
+  return apiFetch(`/collection/${bookId}`, { method: "DELETE" });
+}
+
 

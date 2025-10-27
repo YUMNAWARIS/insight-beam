@@ -53,31 +53,29 @@ module.exports.update_book = async function (req, res, next) {
 }
 
 module.exports.get_all = async function (req, res, next) {
-    const books = await Book.findAllBooks()
-    res.json({
-        Books: books
-    })
+    try {
+        const currentUserId = req.user || null
+        const books = await Book.findAllBooksWithMeta(currentUserId)
+        res.json({
+            Books: books
+        })
+    } catch (err) {
+        res.status(500).json({ Error: true, Error_Message: err.message })
+    }
 }
 
 module.exports.get_one = async function (req, res, next) {
     const id = req.params.id
     try {
-        const book = await Book.findBookById(id)
+        const currentUserId = req.user || null
+        const book = await Book.findBookByIdWithMeta(id, currentUserId)
         if (book) {
-            res.json({
-                Book: book
-            })
+            res.json({ Book: book })
         } else {
-            res.status(400).json({
-                Error: true,
-                Error_Message: "Book Not Found",
-            })
+            res.status(400).json({ Error: true, Error_Message: "Book Not Found" })
         }
     } catch (err) {
-        res.status(400).json({
-            Error: true,
-            Error_Message: "Book Not Found",
-        })
+        res.status(400).json({ Error: true, Error_Message: "Book Not Found" })
     }
 }
 

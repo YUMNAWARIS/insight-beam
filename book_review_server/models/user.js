@@ -56,23 +56,41 @@ async function getUserCreatedBooks(userId) {
 
 async function getUserLikedBooks(userId) {
     return db('books')
-        .join('likes', 'books.id', 'likes.book_id')
-        .where('likes.user_id', userId)
+        .join('user_like', 'books.id', 'user_like.book_id')
+        .where('user_like.user_id', userId)
         .select('books.*')
 }
 
 async function addLike(userId, bookId) {
-    const exists = await db('likes').where({ user_id: userId, book_id: bookId }).first()
+    const exists = await db('user_like').where({ user_id: userId, book_id: bookId }).first()
     if (exists) throw new Error('Book is already liked by you.')
-    await db('likes').insert({ user_id: userId, book_id: bookId })
-    await db('books').where({ id: bookId }).increment('like_count', 1)
+    await db('user_like').insert({ user_id: userId, book_id: bookId })
 }
 
 async function removeLike(userId, bookId) {
-    const exists = await db('likes').where({ user_id: userId, book_id: bookId }).first()
+    const exists = await db('user_like').where({ user_id: userId, book_id: bookId }).first()
     if (!exists) return false
-    await db('likes').where({ user_id: userId, book_id: bookId }).del()
-    await db('books').where({ id: bookId }).decrement('like_count', 1)
+    await db('user_like').where({ user_id: userId, book_id: bookId }).del()
+    return true
+}
+
+async function addToCollection(userId, bookId) {
+    const exists = await db('user_collection').where({ user_id: userId, book_id: bookId }).first()
+    if (exists) throw new Error('Book is already in your collection.')
+    await db('user_collection').insert({ user_id: userId, book_id: bookId })
+}
+
+async function getUserCollection(userId) {
+    return db('books')
+        .join('user_collection', 'books.id', 'user_collection.book_id')
+        .where('user_collection.user_id', userId)
+        .select('books.*')
+}
+
+async function removeFromCollection(userId, bookId) {
+    const exists = await db('user_collection').where({ user_id: userId, book_id: bookId }).first()
+    if (!exists) return false
+    await db('user_collection').where({ user_id: userId, book_id: bookId }).del()
     return true
 }
 
@@ -114,6 +132,9 @@ module.exports = {
     getUserLikedBooks,
     addLike,
     removeLike,
+    addToCollection,
+    getUserCollection,
+    removeFromCollection,
     changePassword,
     updateUserProfile
 }

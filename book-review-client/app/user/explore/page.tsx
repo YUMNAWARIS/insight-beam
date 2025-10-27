@@ -1,7 +1,11 @@
 "use client";
 import { useAuth } from "@/context/AuthContext";
-import { apiFetch } from "@/lib/api";
-import { Alert, Box, Card, CardActionArea, CardContent, CircularProgress, Grid, Typography } from "@mui/material";
+import { apiFetch, likeBook, unlikeBook, saveBook, unsaveBook } from "@/lib/api";
+import { Alert, Box, Card, CardActionArea, CardContent, CircularProgress, Grid, IconButton, Stack, Typography, Tooltip } from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -14,6 +18,10 @@ type Book = {
   language: string;
   created_at?: string;
   updated_at?: string;
+  like_count?: number;
+  save_count?: number;
+  is_liked_by_current_user?: boolean;
+  is_saved_by_current_user?: boolean;
 };
 
 export default function ExplorePage() {
@@ -46,6 +54,29 @@ export default function ExplorePage() {
     };
     load();
   }, [initializing, isAuthenticated]);
+
+  const toggleLike = async (bookId: string, liked: boolean) => {
+    try {
+      const res = liked ? await unlikeBook(bookId) : await likeBook(bookId);
+      const updated = res?.book as Book | undefined;
+      setBooks((prev) => prev.map((b) => (b.id === bookId ? { ...b, ...updated, is_liked_by_current_user: !liked, like_count: updated?.like_count ?? ((b.like_count || 0) + (liked ? -1 : 1)) } : b)));
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
+
+  const toggleSave = async (bookId: string, saved: boolean) => {
+    try {
+      if (saved) {
+        await unsaveBook(bookId);
+      } else {
+        await saveBook(bookId);
+      }
+      setBooks((prev) => prev.map((b) => (b.id === bookId ? { ...b, is_saved_by_current_user: !saved, save_count: (b.save_count || 0) + (saved ? -1 : 1) } : b)));
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
 
   if (initializing) {
     return (
@@ -83,7 +114,7 @@ export default function ExplorePage() {
           {books.map((b) => (
             <Grid item key={b.id} xs={12} sm={6} md={4} lg={3}>
               <Card sx={{ height: "100%" }}>
-                <CardActionArea disableRipple>
+                <CardActionArea disableRipple component="div">
                   <CardContent>
                     <Typography variant="h6" fontWeight={700} gutterBottom noWrap>
                       {b.title}
@@ -94,6 +125,22 @@ export default function ExplorePage() {
                     <Typography variant="body2" color="text.secondary" sx={{ display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                       {b.description}
                     </Typography>
+                    <Box mt={1}>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Tooltip title={b.is_liked_by_current_user ? "Unlike" : "Like"}>
+                          <IconButton size="small" onClick={() => toggleLike(b.id, Boolean(b.is_liked_by_current_user))}>
+                            {b.is_liked_by_current_user ? <FavoriteIcon color="error" fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
+                          </IconButton>
+                        </Tooltip>
+                        <Typography variant="caption" color="text.secondary">{b.like_count ?? 0}</Typography>
+                        <Tooltip title={b.is_saved_by_current_user ? "Unsave" : "Save"}>
+                          <IconButton size="small" onClick={() => toggleSave(b.id, Boolean(b.is_saved_by_current_user))}>
+                            {b.is_saved_by_current_user ? <BookmarkIcon color="primary" fontSize="small" /> : <BookmarkBorderIcon fontSize="small" />}
+                          </IconButton>
+                        </Tooltip>
+                        <Typography variant="caption" color="text.secondary">{b.save_count ?? 0}</Typography>
+                      </Stack>
+                    </Box>
                   </CardContent>
                 </CardActionArea>
               </Card>

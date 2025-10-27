@@ -1,8 +1,8 @@
 "use client";
 import { useAuth } from "@/context/AuthContext";
-import { apiFetch, unsaveBook } from "@/lib/api";
+import { apiFetch, unlikeBook } from "@/lib/api";
 import { Alert, Box, Card, CardActionArea, CardContent, CircularProgress, Grid, IconButton, Stack, Typography, Tooltip } from "@mui/material";
-import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemove";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -14,10 +14,9 @@ type Book = {
   genre: string;
   language: string;
   like_count?: number;
-  save_count?: number;
 };
 
-export default function MyCollectionsPage() {
+export default function MyLikesPage() {
   const { isAuthenticated, initializing } = useAuth();
   const router = useRouter();
   const [books, setBooks] = useState<Book[]>([]);
@@ -36,7 +35,7 @@ export default function MyCollectionsPage() {
       setLoading(true);
       setError(null);
       try {
-        const data = await apiFetch("/collection");
+        const data = await apiFetch("/collection/likes");
         const list = (data?.books || []) as Book[];
         setBooks(list);
       } catch (e) {
@@ -48,9 +47,9 @@ export default function MyCollectionsPage() {
     load();
   }, [initializing, isAuthenticated]);
 
-  const onUnsave = async (bookId: string) => {
+  const onUnlike = async (bookId: string) => {
     try {
-      await unsaveBook(bookId);
+      await unlikeBook(bookId);
       setBooks((prev) => prev.filter((b) => b.id !== bookId));
     } catch (e) {
       setError((e as Error).message);
@@ -71,10 +70,10 @@ export default function MyCollectionsPage() {
     <Box maxWidth={1200} mx="auto" px={2} py={3}>
       <Box mb={2}>
         <Typography variant="h4" fontWeight={800} gutterBottom>
-          My Collection
+          My Likes
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Books you have saved.
+          Books you have liked.
         </Typography>
       </Box>
 
@@ -106,12 +105,12 @@ export default function MyCollectionsPage() {
                     </Typography>
                     <Box mt={1}>
                       <Stack direction="row" spacing={1} alignItems="center">
-                        <Tooltip title="Unsave">
-                          <IconButton size="small" onClick={() => onUnsave(b.id)}>
-                            <BookmarkRemoveIcon fontSize="small" />
+                        <Tooltip title="Unlike">
+                          <IconButton size="small" onClick={() => onUnlike(b.id)}>
+                            <FavoriteIcon color="error" fontSize="small" />
                           </IconButton>
                         </Tooltip>
-                        <Typography variant="caption" color="text.secondary">{b.save_count ?? 0}</Typography>
+                        <Typography variant="caption" color="text.secondary">{b.like_count ?? 0}</Typography>
                       </Stack>
                     </Box>
                   </CardContent>
@@ -121,7 +120,7 @@ export default function MyCollectionsPage() {
           ))}
           {!books.length && (
             <Grid item xs={12}>
-              <Alert severity="info">You have not saved any books yet.</Alert>
+              <Alert severity="info">You have not liked any books yet.</Alert>
             </Grid>
           )}
         </Grid>

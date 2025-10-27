@@ -10,7 +10,8 @@ module.exports = (req, res, next) => {
         })
     } else {
 
-        const token = head;
+        // Support both "<token>" and "Bearer <token>" formats
+        const token = head.startsWith('Bearer ') ? head.slice(7) : head;
         let decodedToken;
 
         try {

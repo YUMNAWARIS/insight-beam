@@ -13,7 +13,7 @@ module.exports.like = async function (req, res, next) {
             })
         }
         await User.addLike(user_id, book_id)
-        const updated = await Book.findBookById(book_id)
+        const updated = await Book.findBookByIdWithMeta(book_id, user_id)
         res.status(200).json({
             message : "You like a book",
             book: updated
@@ -38,7 +38,8 @@ module.exports.unlike = async function (req, res, next) {
         }
         const removed = await User.removeLike(user_id, book_id)
         if (removed) {
-            res.status(200).json({ message: "Disliked Book" })
+            const updated = await Book.findBookByIdWithMeta(book_id, user_id)
+            res.status(200).json({ message: "Disliked Book", book: updated })
         } else {
             res.status(200).json({
                 Error: "Book is not in your likes collection...."
