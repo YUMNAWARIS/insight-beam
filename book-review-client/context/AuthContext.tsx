@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const data = await res.json();
     if (!res.ok || data?.Error) throw new Error(data?.Error_Message || "Login failed");
     persistAuth(data.Authentication_Token, data.user as User);
-    router.replace("/profile");
+    router.replace("/user/explore");
   }, [persistAuth, router]);
 
   const register = useCallback(async ({ name, email, password, bio }: { name: string; email: string; password: string; bio?: string }) => {
@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const data = await res.json();
     if (!res.ok || data?.Error) throw new Error(data?.Error_Message || "Register failed");
     persistAuth(data.Authentication_Token, data.user as User);
-    router.replace("/profile");
+    router.replace("/user/explore");
   }, [persistAuth, router]);
 
   const logout = useCallback(() => {
